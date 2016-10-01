@@ -106,7 +106,6 @@
                    :source-paths ["env/dev/clj"]
                    :plugins [[lein-figwheel "0.5.7"]
                              [lein-doo "0.1.6"]
-                             
                              [lein-sassy "1.0.7"]]
 
                    :injections [(require 'pjstadig.humane-test-output)
