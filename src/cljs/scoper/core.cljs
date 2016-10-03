@@ -8,8 +8,13 @@
 ;; Views
 
 (defn home-page []
-  [:div [:h2 "Welcome to scoper"]
-   [:div [:a {:href "/about"} "go to about page"]]])
+  [:div.container-fluid
+   [:div.row
+    [:div.col-xs-12 "foo"]]])
+
+;(defn home-page []
+  ;[:div [:h2 "Welcome to scoper"]
+   ;[:div [:a {:href "/about"} "go to about page"]]])
 
 (defn about-page []
   [:div [:h2 "About scoper"]

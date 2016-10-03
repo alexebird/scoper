@@ -17,6 +17,7 @@
    [:meta {:charset "utf-8"}]
    [:meta {:name "viewport"
            :content "width=device-width, initial-scale=1"}]
+   [:title "Scoper"]
    (include-css
      "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
      (if (env :dev) "/css/site.css" "/css/site.min.css"))])
@@ -28,7 +29,7 @@
      mount-target
      (include-js
        "//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"
-       "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+       "//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
        "/js/app.js")]))
 
 
