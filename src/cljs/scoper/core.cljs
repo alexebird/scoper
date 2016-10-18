@@ -55,7 +55,7 @@
                    (.enter)
                    (.append "g")
                    (.attr "class" #(if (.-children %) "node" "leaf node"))
-                   (.attr "transform" #(str "translate(" (.-x %) "," (.-y %) ")"))
+                   ;(.attr "transform" #(str "translate(" (.-x %) "," (.-y %) ")"))
                    )
           ]
 
@@ -66,7 +66,7 @@
 
       (-> node
           (.append "circle")
-          (.attr "r" #(.-r %))
+          (.attr "r" "100")
           )
 
       (-> node
