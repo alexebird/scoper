@@ -30,6 +30,7 @@
      (include-js
        "//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"
        "//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+       "//d3js.org/d3.v4.min.js"
        "/js/app.js")]))
 
 

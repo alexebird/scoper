@@ -1,7 +1,7 @@
 # Scoper
 
 ```
-lein figwheel
+rlwrap lein figwheel
 lein run
 lein sass watch
 ```
