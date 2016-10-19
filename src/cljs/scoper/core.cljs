@@ -50,7 +50,7 @@
     (if error (throw error))
     (let [
           svg      (.select d3 "svg")
-          diameter (int (.attr svg "width"))
+          diameter (int (clojure.string/replace (.style svg "width") #"px" ""))
           g        (-> svg (.append "g") (.attr "transform" "translate(2,2)"))
           format   (.format d3 ",d")
           pack     (-> d3 .pack (.size #js [(- diameter 4) (- diameter 4)]))
@@ -104,7 +104,7 @@
 
 (defn d3-thing []
   (let [data (reagent/cursor app-state [:svg])]
-    [:svg#svgland {:width 600 :height 600}]))
+    [:svg#svgland]))
 
 (defn d3-thing-with-callbacks []
   (with-meta d3-thing
