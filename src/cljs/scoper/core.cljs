@@ -1,103 +1,74 @@
+;
+; zoomable cirle pack layout: http://mbostock.github.io/d3/talk/20111116/pack-hierarchy.html
+;
 (ns scoper.core
     (:require [reagent.core :as reagent :refer [atom cursor]]
               [reagent.session :as session]
               [secretary.core :as secretary :include-macros true]
-              [accountant.core :as accountant]
-              ))
+              [accountant.core :as accountant]))
 
 (defonce app-state (reagent/atom {:svg {:width 960 :height 760}}))
 
 (def d3 window.d3)
+(def num-format (.format d3 ",d"))
 
-;var svg = d3.select("svg"),
-    ;diameter = +svg.attr("width"),
-    ;g = svg.append("g").attr("transform", "translate(2,2)"),
-    ;format = d3.format(",d");
+(defn- svg-el []
+  (.select d3 "svg"))
 
-;var pack = d3.pack()
-    ;.size([diameter - 4, diameter - 4]);
+(defn- px-attr-to-int [el attr]
+  (int (clojure.string/replace (.style el attr) #"px" "")))
 
-;d3.json("flare.json", function(error, root) {
-  ;if (error) throw error;
+(defn- diameter [svg]
+  (min (px-attr-to-int svg "height") (px-attr-to-int svg "width")))
 
-  ;root = d3.hierarchy(root)
-      ;.sum(function(d) { return d.size; })
-      ;.sort(function(a, b) { return b.value - a.value; });
+(defn- top-level-group [svg]
+  (-> svg (.append "g") (.attr "transform" "translate(2,2)")))
 
-  ;var node = g.selectAll(".node")
-    ;.data(pack(root).descendants())
-    ;.enter().append("g")
-      ;.attr("class", function(d) { return d.children ? "node" : "leaf node"; })
-      ;.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+(defn- pack-fn [svg]
+  (let [diameter (diameter svg)]
+    (-> d3 .pack (.size #js [(- diameter 4) (- diameter 4)]))))
 
-  ;node.append("title")
-      ;.text(function(d) { return d.data.name + "\n" + format(d.value); });
+(defn- mk-hierarchy [data]
+  (-> d3
+      (.hierarchy data)
+      (.sum #(.-size %))
+      (.sort #(- (.-value %2) (.-value %1)))))
 
-  ;node.append("circle")
-      ;.attr("r", function(d) { return d.r; });
+(defn- mk-dom-nodes [g pack root]
+  (-> g
+      (.selectAll ".node")
+      (.data root)
+      (.enter)
+      (.append "g")
+      (.attr "class" #(if (.-children %) "node" "leaf node"))
+      (.attr "transform"
+             #(str "translate(" (.-x %) "," (.-y %) ")"))))
 
-  ;node.filter(function(d) { return !d.children; }).append("text")
-      ;.attr("dy", "0.3em")
-      ;.text(function(d) { return d.data.name.substring(0, d.r / 3); });
-;});
+(defn- decorate-nodes [nodes]
+  (-> nodes
+      (.append "title")
+      (.text #(str (-> % .-data .-name) "\n" (num-format (.-value %)))))
+  (-> nodes
+      (.append "circle")
+      (.attr "r" #(.-r %)))
+  (-> nodes
+      (.filter #(not (.-children %)))
+      (.append "text")
+      (.attr "dy" "0.3em")
+      (.text #(str (-> % .-data .-name (.substring 0 (/ (.-r %) 3)))))))
 
-
-
-;(defn do-node [j])
-
-(defn json-fn []
-  (fn [error root]
-    (if error (throw error))
-    (let [
-          svg      (.select d3 "svg")
-          diameter (int (clojure.string/replace (.style svg "width") #"px" ""))
-          g        (-> svg (.append "g") (.attr "transform" "translate(2,2)"))
-          format   (.format d3 ",d")
-          pack     (-> d3 .pack (.size #js [(- diameter 4) (- diameter 4)]))
-          root (-> d3
-                   (.hierarchy root)
-                   (.sum #(.-size %))
-                   (.sort #(- (.-value %2) (.-value %1)))
-                   )
-          node (-> g
-                   (.selectAll ".node")
-                   (doto
-                     (js/console.debug (.descendants (pack root)))
-                     )
-                   (.data (.descendants (pack root)))
-                   (.enter)
-                   (.append "g")
-                   (.attr "class" #(if (.-children %) "node" "leaf node"))
-                   (.attr "transform"
-                          #(str "translate(" (.-x %) "," (.-y %) ")")
-                          ;(fn [d]
-                            ;(js/console.debug d)
-                            ;(str "translate(" (.-x d) "," (.-y d) ")"))
-                          )
-                   )
-          ]
-
-      (-> node
-          (.append "title")
-          (.text #(str (-> % .-data .-name) "\n" (format (.-value %))))
-          )
-
-      (-> node
-          (.append "circle")
-          (.attr "r" #(.-r %))
-          )
-
-      (-> node
-          (.filter #(not (.-children %)))
-          (.append "text")
-          (.attr "dy" "0.3em")
-          (.text #(str (-> % .-data .-name (.substring 0 (/ (.-r %) 3)))))
-          )
-
-      )))
+(defn json-fn [error data]
+  (if error
+    (throw error)
+    (let [svg  (svg-el)
+          g    (top-level-group svg)
+          pack (pack-fn svg)
+          root (-> data mk-hierarchy pack)
+          nodes (mk-dom-nodes g pack (.descendants root))]
+      (decorate-nodes nodes))))
 
 (defn draw []
-  (.json d3 "flare.json" (json-fn)))
+  (.json d3 "flare.json" json-fn))
 
 ;; -------------------------
 ;; Views
@@ -142,8 +113,7 @@
 
 (defn mount-root []
   (reagent/render [current-page] (.getElementById js/document "app"))
-  (draw)
-  )
+  (draw))
 
 (defn init! []
   (accountant/configure-navigation!
