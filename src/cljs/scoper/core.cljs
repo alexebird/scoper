@@ -41,21 +41,39 @@
       ;.text(function(d) { return d.data.name.substring(0, d.r / 3); });
 ;});
 
-(defn json-fn [g pack format]
+
+
+;(defn do-node [j])
+
+(defn json-fn []
   (fn [error root]
     (if error (throw error))
     (let [
+          svg      (.select d3 "svg")
+          diameter (int (.attr svg "width"))
+          g        (-> svg (.append "g") (.attr "transform" "translate(2,2)"))
+          format   (.format d3 ",d")
+          pack     (-> d3 .pack (.size #js [(- diameter 4) (- diameter 4)]))
           root (-> d3
                    (.hierarchy root)
                    (.sum #(.-size %))
-                   (.sort #(- (.-value %2) (.-value %1))))
+                   (.sort #(- (.-value %2) (.-value %1)))
+                   )
           node (-> g
                    (.selectAll ".node")
+                   (doto
+                     (js/console.debug (.descendants (pack root)))
+                     )
                    (.data (.descendants (pack root)))
                    (.enter)
                    (.append "g")
                    (.attr "class" #(if (.-children %) "node" "leaf node"))
-                   ;(.attr "transform" #(str "translate(" (.-x %) "," (.-y %) ")"))
+                   (.attr "transform"
+                          #(str "translate(" (.-x %) "," (.-y %) ")")
+                          ;(fn [d]
+                            ;(js/console.debug d)
+                            ;(str "translate(" (.-x d) "," (.-y d) ")"))
+                          )
                    )
           ]
 
@@ -66,7 +84,7 @@
 
       (-> node
           (.append "circle")
-          (.attr "r" "100")
+          (.attr "r" #(.-r %))
           )
 
       (-> node
@@ -79,23 +97,14 @@
       )))
 
 (defn draw []
-  (let [
-        svg      (.select d3 "svg")
-        diameter (.style svg "width")
-        g        (-> svg (.append "g") (.attr "transform" "translate(2,2)"))
-        format   (.format d3 ",d")
-        pack     (-> d3 (.pack) (.size [(- diameter 4) (- diameter 4)]))
-        ]
-    (js/console.log "foo")
-    (.json d3 "json.json" (json-fn g pack format))
-    nil))
+  (.json d3 "flare.json" (json-fn)))
 
 ;; -------------------------
 ;; Views
 
 (defn d3-thing []
   (let [data (reagent/cursor app-state [:svg])]
-    [:svg#svgland]))
+    [:svg#svgland {:width 600 :height 600}]))
 
 (defn d3-thing-with-callbacks []
   (with-meta d3-thing
@@ -116,7 +125,8 @@
 
 (defn current-page []
   [:div#react-root
-   [(session/get :current-page)]])
+    [:button {:on-click #(draw)} "refresh"]
+    [(session/get :current-page)]])
 
 ;; -------------------------
 ;; Routes
@@ -131,7 +141,9 @@
 ;; Initialize app
 
 (defn mount-root []
-  (reagent/render [current-page] (.getElementById js/document "app")))
+  (reagent/render [current-page] (.getElementById js/document "app"))
+  (draw)
+  )
 
 (defn init! []
   (accountant/configure-navigation!
@@ -142,5 +154,4 @@
      (fn [path]
        (secretary/locate-route path))})
   (accountant/dispatch-current!)
-  (mount-root)
-  (draw))
+  (mount-root))
