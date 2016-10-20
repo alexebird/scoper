@@ -1,36 +1,42 @@
-@import "foo";
+html, body {
+  height: 100%;
+}
 
-/*.body-container {*/
-  /*font-family: 'Helvetica Neue', Verdana, Helvetica, Arial, sans-serif;*/
-  /*max-width: 600px;*/
-  /*margin: 0 auto;*/
-  /*padding-top: 72px;*/
-  /*-webkit-font-smoothing: antialiased;*/
-  /*font-size: 1.125em;*/
-  /*color: #333;*/
-  /*line-height: 1.5em;*/
-/*}*/
+body, #app, #react-root {
+  display: flex;
+  flex: 1;
+}
 
-/*h1, h2, h3 {*/
-  /*color: #000;*/
-/*}*/
-/*h1 {*/
-  /*font-size: 2.5em*/
-/*}*/
+#app, #svgland {
+  margin: 5px;
+  flex: 1;
+}
 
-/*h2 {*/
-  /*font-size: 2em*/
-/*}*/
+body {
+  background-color: green;
+}
 
-/*h3 {*/
-  /*font-size: 1.5em*/
-/*}*/
+#app {
+  background-color: cyan;
+}
 
-/*a {*/
-  /*text-decoration: none;*/
-  /*color: #09f;*/
-/*}*/
+circle {
+  fill: rgb(31, 119, 180);
+  fill-opacity: .25;
+  stroke: rgb(31, 119, 180);
+  stroke-width: 1px;
+}
 
-/*a:hover {*/
-  /*text-decoration: underline;*/
-/*}*/
+.leaf circle {
+  fill: #ff7f0e;
+  fill-opacity: 1;
+}
+
+text {
+  font: 10px sans-serif;
+  text-anchor: middle;
+}
+
+#svgland {
+  background: #333;
+}

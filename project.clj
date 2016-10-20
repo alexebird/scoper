@@ -4,16 +4,14 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :dependencies [[org.clojure/clojure "1.8.0"]
-                 [ring-server "0.4.0"]
+  :dependencies [
+                 ;[org.clojure/clojure "1.8.0"]
                  [reagent "0.6.0"]
                  [reagent-forms "0.5.25"]
                  [reagent-utils "0.2.0"]
-                 [ring "1.5.0"]
-                 [ring/ring-defaults "0.2.1"]
-                 [compojure "1.5.1"]
+                 ;[compojure "1.5.1"]
                  [hiccup "1.0.5"]
-                 [yogthos/config "0.8"]
+                 ;[yogthos/config "0.8"]
                  [org.clojure/clojurescript "1.9.229"
                   :scope "provided"]
                  [secretary "1.2.3"]
@@ -25,21 +23,18 @@
             [lein-asset-minifier "0.2.7"
              :exclusions [org.clojure/clojure]]]
 
-  :ring {:handler scoper.handler/app
-         :uberwar-name "scoper.war"}
-
   :min-lein-version "2.5.0"
 
-  :uberjar-name "scoper.jar"
+  ;:uberjar-name "scoper.jar"
 
-  :main scoper.server
+  ;:main scoper.server
 
   :clean-targets ^{:protect false}
   [:target-path
    [:cljsbuild :builds :app :compiler :output-dir]
    [:cljsbuild :builds :app :compiler :output-to]]
 
-  :source-paths ["src/clj" "src/cljc"]
+  ;:source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources" "target/cljsbuild"]
 
   :minify-assets
@@ -48,14 +43,14 @@
 
   :cljsbuild
   {:builds {:min
-            {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
+            {:source-paths ["src/cljs"]
              :compiler
              {:output-to "target/cljsbuild/public/js/app.js"
               :output-dir "target/uberjar"
               :optimizations :advanced
               :pretty-print  false}}
             :app
-            {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
+            {:source-paths ["src/cljs"]
              :compiler
              {:main "scoper.dev"
               ;:asset-path "/js/out"
@@ -68,7 +63,7 @@
               :optimizations :none
               :pretty-print  true}}
             :test
-            {:source-paths ["src/cljs" "src/cljc" "test/cljs"]
+            {:source-paths ["src/cljs"]
              :compiler {:main scoper.doo-runner
                         :asset-path "/js/out"
                         :output-to "target/test.js"
@@ -88,7 +83,8 @@
    :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"
                       ]
    :css-dirs ["resources/public/css"]
-   :ring-handler scoper.handler/app}
+   ;:ring-handler scoper.handler/app
+   }
 
 
   :sass {:src "src/sass"
