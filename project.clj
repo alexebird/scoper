@@ -58,9 +58,12 @@
             {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
              :compiler
              {:main "scoper.dev"
-              :asset-path "/js/out"
-              :output-to "target/cljsbuild/public/js/app.js"
-              :output-dir "target/cljsbuild/public/js/out"
+              ;:asset-path "/js/out"
+              ;:output-to "target/cljsbuild/public/js/app.js"
+              ;:output-dir "target/cljsbuild/public/js/out"
+              :asset-path "/js/scoper/out"
+              :output-to "../metascope/priv/static/js/scoper/scoper.js"
+              :output-dir "../metascope/priv/static/js/scoper/out"
               :source-map true
               :optimizations :none
               :pretty-print  true}}
