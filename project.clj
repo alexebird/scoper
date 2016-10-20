@@ -43,14 +43,14 @@
 
   :cljsbuild
   {:builds {:min
-            {:source-paths ["src/cljs"]
+            {:source-paths ["src/cljs" "env/prod/cljs"]
              :compiler
              {:output-to "target/cljsbuild/public/js/app.js"
               :output-dir "target/uberjar"
               :optimizations :advanced
               :pretty-print  false}}
             :app
-            {:source-paths ["src/cljs"]
+            {:source-paths ["src/cljs" "env/dev/cljs"]
              :compiler
              {:main "scoper.dev"
               ;:asset-path "/js/out"
