@@ -35,14 +35,18 @@
       (.sort #(- (.-value %2) (.-value %1)))))
 
 (defn- mk-dom-nodes [g pack root]
-  (-> g
-      (.selectAll ".node")
-      (.data root)
-      (.enter)
-      (.append "g")
-      (.attr "class" #(if (.-children %) "node" "leaf node"))
-      (.attr "transform"
-             #(str "translate(" (.-x %) "," (.-y %) ")"))))
+  (let [updated-groups (-> g
+                           (.selectAll ".node")
+                           (.data root))]
+    (-> updated-groups
+        (.exit)
+        (.remove))
+    (-> updated-groups
+        (.enter)
+        (.append "g")
+        (.attr "class" #(if (.-children %) "node" "leaf node"))
+        (.attr "transform"
+               #(str "translate(" (.-x %) "," (.-y %) ")")))))
 
 (defn- decorate-nodes [nodes]
   (-> nodes
@@ -57,7 +61,7 @@
       (.attr "dy" "0.3em")
       (.text #(str (-> % .-data .-name (.substring 0 (/ (.-r %) 3)))))))
 
-(defn json-fn [error data]
+(defn redraw-fn [error data]
   (if error
     (throw error)
     (let [svg  (svg-el)
@@ -67,8 +71,21 @@
           nodes (mk-dom-nodes g pack (.descendants root))]
       (decorate-nodes nodes))))
 
+;(defn json-fn [error data]
+  ;(if error
+    ;(throw error)
+    ;(let [svg  (svg-el)
+          ;g    (top-level-group svg)
+          ;pack (pack-fn svg)
+          ;root (-> data mk-hierarchy pack)
+          ;nodes (mk-dom-nodes g pack (.descendants root))]
+      ;(decorate-nodes nodes))))
+
+;(defn draw []
+  ;(.json d3 "flare.json" json-fn))
+
 (defn draw []
-  (.json d3 "flare.json" json-fn))
+  (.json d3 "flare.json" redraw-fn))
 
 ;; -------------------------
 ;; Views
