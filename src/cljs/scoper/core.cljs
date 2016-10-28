@@ -1,11 +1,9 @@
-;
-; zoomable cirle pack layout: http://mbostock.github.io/d3/talk/20111116/pack-hierarchy.html
-;
 (ns scoper.core
     (:require [reagent.core :as reagent :refer [atom cursor]]
               [reagent.session :as session]
               [secretary.core :as secretary :include-macros true]
-              [accountant.core :as accountant]))
+              [accountant.core :as accountant]
+              [scoper.zoom :as zoom]))
 
 (defonce app-state (reagent/atom {:svg {:width 960 :height 760}}))
 
@@ -61,7 +59,7 @@
       (.attr "dy" "0.3em")
       (.text #(str (-> % .-data .-name (.substring 0 (/ (.-r %) 3)))))))
 
-(defn redraw-fn [error data]
+(defn redraw [error data]
   (if error
     (throw error)
     (let [svg  (svg-el)
@@ -71,21 +69,8 @@
           nodes (mk-dom-nodes g pack (.descendants root))]
       (decorate-nodes nodes))))
 
-;(defn json-fn [error data]
-  ;(if error
-    ;(throw error)
-    ;(let [svg  (svg-el)
-          ;g    (top-level-group svg)
-          ;pack (pack-fn svg)
-          ;root (-> data mk-hierarchy pack)
-          ;nodes (mk-dom-nodes g pack (.descendants root))]
-      ;(decorate-nodes nodes))))
-
-;(defn draw []
-  ;(.json d3 "flare.json" json-fn))
-
 (defn draw []
-  (.json d3 "flare.json" redraw-fn))
+  (.json d3 "github.json" zoom/redraw))
 
 ;; -------------------------
 ;; Views

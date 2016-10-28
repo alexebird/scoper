@@ -86,10 +86,6 @@
    ;:ring-handler scoper.handler/app
    }
 
-
-  :sass {:src "src/sass"
-         :dst "resources/public/css"}
-
   :profiles {:dev {:repl-options {:init-ns scoper.repl}
 
                    :dependencies [[ring/ring-mock "0.3.0"]
@@ -104,8 +100,7 @@
 
                    :source-paths ["env/dev/clj"]
                    :plugins [[lein-figwheel "0.5.7"]
-                             [lein-doo "0.1.6"]
-                             [lein-sassy "1.0.7"]]
+                             [lein-doo "0.1.6"]]
 
                    :injections [(require 'pjstadig.humane-test-output)
                                 (pjstadig.humane-test-output/activate!)]
