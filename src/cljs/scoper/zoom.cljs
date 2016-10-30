@@ -7,6 +7,10 @@
 (def margin 20)
 (def view-atom (atom nil))
 
+(def dia-atom (atom nil))
+(def node-atom (atom nil))
+(def circle-atom (atom nil))
+
 (defn- svg-el []
   (.select d3 "svg"))
 
@@ -139,8 +143,8 @@
       (.tween "zoom" (fn [_]
                        (let [i (.interpolateZoom d3 @view-atom #js [(.-x focus) (.-y focus) (two-r-plus-margin focus)])]
                          ;(fn [t] (zoom-to (i t)))
+                         (fn [t] (zoom-to @dia-atom (i t) @node-atom @circle-atom))
                          )))
-
       ))
 
 (defn zoom-fn [d orig-focus]
@@ -157,13 +161,16 @@
     ))
 
 (defn xlate [x y]
-  (str "translate(" x "," y ")"))
+  (let [result  (str "translate(" x "," y ")")]
+    (js/console.log result)
+    result))
 
 (defn zoom-to [dia v node circle]
-  (let [k (/ dia (get v 2))]
+  (let [denom (get v 2)
+        k (/ dia denom)]
     (reset! view-atom v)
     (-> node
-        (.attr "transform" (fn [d] (xlate (- (.-x d) (get v 0)) (- (.-y d) (get v 1))))))
+        (.attr "transform" (fn [d] (xlate (* k (- (.-x d) (get v 0))) (* k (- (.-y d) (get v 1)))))))
     (-> circle
         (.attr "r" (fn [d] (* (.-r d) k))))
     ))
@@ -184,6 +191,10 @@
           text (text g nodes root)
           node (-> g (.selectAll "circle,text"))
           ]
+
+      (reset! dia-atom dia)
+      (reset! node-atom node)
+      (reset! circle-atom circle)
 
       (-> svg
           (.style "background" (color -1))
